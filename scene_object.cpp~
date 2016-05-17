@@ -1,0 +1,9 @@
+#include "ray.h"
+
+class scene_object
+{
+
+public:
+	float intersect(Ray& ray);
+	
+};

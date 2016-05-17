@@ -1,0 +1,192 @@
+#include "camera.cpp"
+
+struct rgbf
+{
+	float r, g, b;
+	rgbf(const float x =0, const float y =0, const float z =0) { r = x; g = y; b = z; }
+	rgbf operator+(rgbf);
+	rgbf operator*(float);
+	rgbf operator*(rgbf&);
+	rgbf operator!();
+};
+
+class scene_object
+{
+
+public:
+	bool reflective;
+	rgbf natrual_colour;
+	rgbf ambient_colour;
+	vector3 position;
+	virtual float intersect(Ray& ray) =0;
+	virtual vector3 surface_normal(vector3&) =0;
+	scene_object(vector3 pos) { position = pos; natrual_colour = rgbf(1, 1, 1); }
+	scene_object(vector3 pos, rgbf nat, rgbf amb, bool ref =false) 
+	{ position = pos; natrual_colour = nat; ambient_colour = amb; reflective = ref;}
+};
+
+class sphere_object : public scene_object
+{
+	float radius;
+public:
+	float intersect(Ray& ray);
+	vector3 surface_normal(vector3&);
+	sphere_object(float rad, vector3 pos) : scene_object(pos) 
+	{ 
+		radius = rad; 
+	}
+	
+	sphere_object(float rad, vector3 pos, rgbf nat, rgbf amb) : scene_object(pos, nat, amb)
+	{ 
+		radius = rad;
+	}
+};
+
+float sphere_object::intersect(Ray& ray)
+{
+	vector3& A = ray.position;
+	vector3& B = ray.direction;
+	vector3& C = position;
+	
+	float a = B * B;
+	float b = 2 * (B * (A - C));
+	float c = (A - C) * (A - C) - radius * radius;
+
+	if (b * b - 4 * a * c < 0 || a < 0) 
+	{
+		return 0; //No intersection
+	}
+
+	//Compute such ts as discriminant is > 0
+	float t1 = (-b + sqrt(b * b - 4 * a * c))/(2 * a);
+	float t2 = (-b - sqrt(b * b - 4 * a * c))/(2 * a);
+
+	if (t1 > t2)
+	{
+		return t2 > 0 ? t2 : t1;
+	}
+
+	return t1 > 0 ? t1 : t2;	
+}
+
+vector3 sphere_object::surface_normal(vector3& a)
+{
+	return !(a - position);
+}
+
+rgbf rgbf::operator+(rgbf a)
+{
+	return rgbf(r + a.r, g + a.g, b + a.b);
+}
+
+rgbf rgbf::operator*(float a)
+{
+	return rgbf(a * r, a * g, a* b);
+}
+
+rgbf rgbf::operator*(rgbf& a)
+{
+	return rgbf(r * a.r, g * a.g, b * a.b);
+}
+
+rgbf rgbf::operator!()
+{
+	float s = fmax(fmax(r, g), b);
+	return rgbf(r/s, g/s, b/s);
+}
+
+class plane_object : public scene_object
+{
+public:
+	vector3 b;
+	vector3 c;
+	vector3 n;
+	
+	float intersect(Ray& ray);
+	vector3 surface_normal(vector3&);
+	
+	plane_object(vector3 pos, vector3 b_, vector3 c_) : scene_object(pos) 
+	{ 
+		b = b_;		//Two vectors that span plane
+		c = c_;		//This WILL through divide by zero if parallel
+		n = !(b_ ^ c_); //Normal for plane
+	}
+
+	plane_object(vector3 pos, vector3 b_, vector3 c_, rgbf nat, rgbf amb) : scene_object(pos, nat, amb) 
+	{ 
+		b = b_;		//Two vectors that span plane
+		c = c_;		//This WILL through divide by zero if parallel
+		n = !(b_ ^ c_); //Normal for plane
+	}
+};
+
+float plane_object::intersect(Ray& ray)
+{
+	// Equation for plane is r = a + l b + u c
+	// Equation for line is r = d + E e
+	// equation for plane is also: r . n = a . n
+	// r . (b x c) = a . (b x c)
+	// (d + E e) . (b x c) = a . (b x c)
+	// d . (b x c) + E e . (b x c) = a . (b x c)
+	// E e . (b x c) = a . (b x c) - d . (b x c)
+	// E e . (b x c) = (a - d) . (b x c)
+	//	      (a - d) . (b x c)
+	// ==> E =   ------------------
+	//		 e . (b x c)
+
+	//Feasability condition e . (b x c) =/= 0
+	float k = ray.direction * n;
+
+	if (k == 0) return 0; //Check if line exists in plane
+	//std::cin.get();
+	//std::cout << ((position - ray.position) * n) * (1 / k) << std::endl;
+	return fmax(0,((position - ray.position) * n) * (1 / k));
+}
+
+vector3 plane_object::surface_normal(vector3&)
+{
+	return n; //Surface normal for plane already computed
+}
+
+//Light source
+class light
+{
+public:
+	vector3 position = vector3(0, 0, 0);
+	rgbf colour = rgbf(1, 1, 1);
+	float intensity = 1.0f;
+	light(vector3, rgbf, float);
+};
+
+light::light(vector3 pos, rgbf col, float inte)
+{
+	position = pos;
+	colour = col;
+	intensity = inte;
+}
+
+class box : public scene_object
+{
+	vector3 topRight;
+	vector3 botLeft;
+public:
+	float intersect(Ray&);
+	vector3 surface_normal(vector3&);
+
+	box(vector3 pos, vector3 t, vector3 b, rgbf nat, rgbf amb, bool ref = false) : scene_object(pos, nat, amb)
+	{
+		reflective = ref;
+		topRight = t;
+		botLeft = b;
+	}
+};
+
+float box::intersect(Ray& ray)
+{
+	
+}
+
+vector3 box::surface_normal(vector3& pos)
+{
+	
+}
