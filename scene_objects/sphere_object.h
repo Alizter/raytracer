@@ -13,6 +13,7 @@ public:
 	vector3 surface_normal(vector3&);
 	sphere_object(float rad, vector3 pos) : scene_object(pos) { radius = rad; }
 	sphere_object(float rad, vector3 pos, rgbf nat, rgbf amb) : scene_object(pos) { radius = rad; }
+	rgbf altcol(vector3& pos) { return natrual_colour; }
 };
 
 float sphere_object::intersect(Ray& ray)

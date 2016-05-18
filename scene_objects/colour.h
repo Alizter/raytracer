@@ -11,6 +11,7 @@ struct rgbf
 	rgbf operator*(float);
 	rgbf operator*(rgbf&);
 	rgbf operator!();
+	rgbf operator+=(rgbf);
 };
 
 
@@ -34,6 +35,14 @@ rgbf rgbf::operator!()
 {
 	float s = fmax(fmax(r, g), b);
 	return rgbf(r/s, g/s, b/s);
+}
+
+rgbf rgbf::operator+=(rgbf a)
+{
+	this->r += a.r;
+	this->g += a.g;
+	this->b += a.b;
+	return *this;
 }
 
 

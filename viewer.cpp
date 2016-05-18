@@ -23,8 +23,8 @@ unsigned int
 int size = window_width * window_height;
 
 camera cam1(
-	vector3(0, 0, 0) , //Position
-	!vector3(1, 0, 0), //Direction			
+	vector3(0, -1, 0) , //Position
+	!vector3(1, 0.5, 0), //Direction			
 	!vector3(0, 0, 1), //Up vector
 	window_width, window_height);
 //
@@ -87,34 +87,36 @@ void keyPress(unsigned char key, int x, int y)
 		glutPostRedisplay();
 	}
 
+	const float inc = 0.1;
+
 	if (key == 'w')
 	{
-		MoveLight(vector3(1, 0, 0));
+		MoveLight(vector3(inc, 0, 0));
 	}
 	
 	if (key == 's')
 	{
-		MoveLight(vector3(-1, 0, 0));
+		MoveLight(vector3(-inc, 0, 0));
 	}
 
 	if (key == 'q')
 	{
-		MoveLight(vector3(0, 0, 1));
+		MoveLight(vector3(0, 0, inc));
 	}
 
 	if (key == 'e')
 	{
-		MoveLight(vector3(0, 0, -1));
+		MoveLight(vector3(0, 0, -inc));
 	}
 
 	if (key == 'a')
 	{
-		MoveLight(vector3(0, -1, 0));
+		MoveLight(vector3(0, -inc, 0));
 	}
 
 	if (key == 'd')
 	{
-		MoveLight(vector3(0, 1, 0));
+		MoveLight(vector3(0, inc, 0));
 	}
 
 }
@@ -144,18 +146,18 @@ void InitialiseScene()
 {
 	sphere_object* sphere1 = new sphere_object(0.5f, vector3(2, 0, 0));
 	sphere1->natrual_colour = rgbf(1, 0, 0);
-	sphere1->transparent = true;
-	scene1.add_object(sphere1);
+	//sphere1->transparent = true;
+	//scene1.add_object(sphere1);
 
-	sphere_object* sphere2 = new sphere_object(0.5f, vector3(3, 0.5, 0));
+	sphere_object* sphere2 = new sphere_object(0.5f, vector3(2.5, 0.5, 0));
 	sphere2->natrual_colour = rgbf(0, 0, 1);
-	scene1.add_object(sphere2);
+	//scene1.add_object(sphere2);
 
 	plane_object* plane1 = new plane_object(vector3(0, 0, -0.5), vector3(1, 0, 0), vector3(0, 1, 0));
 	plane1->natrual_colour = rgbf(0, 1, 0);
 	scene1.add_object(plane1);
 	 
-	box* box1 = new box(vector3(4, 0, 0), vector3(-0.5, -0.5, -0.5), vector3(0.5, 0.5, 0.5));
+	box* box1 = new box(vector3(2, 0, 0), vector3(-0.5, -0.5, -0.5), vector3(0.5, 0.5, 0.5));
 	box1->natrual_colour = rgbf(0, 0, 1);
 	scene1.add_object(box1);
 	

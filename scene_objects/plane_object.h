@@ -9,6 +9,8 @@ public:
 	
 	float intersect(Ray& ray);
 	vector3 surface_normal(vector3&);
+
+	rgbf altcol(vector3& pos) { return natrual_colour; }
 	
 	plane_object(vector3 pos, vector3 b_, vector3 c_) : scene_object(pos) 
 	{ 

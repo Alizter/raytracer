@@ -28,6 +28,9 @@ public:
 	vector3 position;
 	virtual float intersect(Ray& ray) = 0;
 	virtual vector3 surface_normal(vector3&) = 0;
+		
+	//Alternative colouring
+	virtual rgbf altcol(vector3& pos) =0;//{ return natrual_colour; }
 	
 	scene_object(vector3 pos) 
 	{ 

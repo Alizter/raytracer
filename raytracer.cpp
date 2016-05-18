@@ -11,12 +11,19 @@
 //	shoot a ray from ray(t) in a reflective direction
 
 #include "scene.cpp"
+#include <typeinfo>
 
 class RayTracer
 {
 public:
 	int max_depth;
-	rgbf shootRay(scene&, Ray, int);
+	//rgbf shootRay(scene&, Ray, int);
+	rgbf shootRay(scene&, Ray, int, 
+			bool is_light 	=false, 
+			Ray oldRay 	=Ray(vector3(0, 0, 0), vector3(0, 0, 0)), 
+			light* lig 	=new light(vector3(0, 0, 0), rgbf(0, 0, 0), 0),
+		  scene_object* oldobj 	=NULL); //Default values for non-shadows
+
 
 	RayTracer(int depth)
 	{
@@ -24,20 +31,27 @@ public:
 	}
 };
 
-rgbf shade(scene_object* obj, vector3 pos, vector3 dir, vector3 olddir, light* lig)
+rgbf cubecolour(vector3& pos)
+{
+	
+}
+
+rgbf shade(scene_object* obj, vector3& pos, vector3& dir, vector3& olddir, light* lig)
 {
 	float k_d = obj->k_diff;
 	float k_s = obj->k_spec;	
 	float I_s = lig->intensity;
 	
 	vector3 L = !dir;
-	vector3 n = obj->surface_normal(pos);
+	
+	vector3 n = obj->surface_normal(pos); //here we are
 	vector3 R = n * 2 * fmax(0, L * n) - L;
 	
 	float diff = k_d * I_s * fmax(0, L * n);
 	float spec = k_s * I_s * pow(fmax(0, -!olddir * R), obj->shininess);
 	
-	return obj->ambient_colour + (obj->natrual_colour * diff) ;//+ (lig->colour * spec);
+	//return rgbf(0, 0, 0.5);
+	return obj->ambient_colour + (obj->altcol(pos) * diff) ;//+ (lig->colour * spec);
 }
 
 rgbf pixelshade(scene& scene1, Ray ray, float t, int index)
@@ -65,7 +79,86 @@ rgbf pixelshade(scene& scene1, Ray ray, float t, int index)
 	return c;
 }
 
-rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth)
+//Recursive function (merging old shootRay and shadpixel)
+rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth, bool is_light, Ray oldRay, light* lig, scene_object* oldobj)
+{
+	//if is_light then shootRay is a shadow ray
+
+	//Workout closest intersection and object
+
+	float t = 0; //ray parameter
+	scene_object* objp;   //pointer to object of intersection
+
+	for (int i = 0; i < scene1.objects_num; i++)
+	{
+		//Work out t for given object
+		//This part can be optimised to search certain objects in order
+		//to save calling intersect(ray) for useless objects
+		float temp = scene1.objects[i]->intersect(ray); //intersection with object
+
+		if ((temp < t || t == 0) && temp > 0) //if (temp is shorter than t or t is currently 0) and temp is non-zero
+		{
+			t = temp;
+			objp = scene1.objects[i];
+		}
+	}
+
+	if (t == 0) //No hit
+	{
+		if (is_light) //No hit with light ray.
+		{	
+			//No objects in way of sending light to source
+			//Illumination model			
+
+			//**
+			// 19:07 18 May 2016 shade is giving segmentation fault
+			//**
+			
+			return shade(oldobj, ray.position, ray.direction, oldRay.direction, lig);
+			//return rgbf(0.5, 0, 0.5);
+		}
+		else
+		{
+			return rgbf(0, 0, 0); //Returns black (background colour)
+		}
+	}
+	else
+	{
+	
+		//case where there is a hit but is also a light ray
+		//for now shade as shadow but in future advanced reflections
+	
+		if (is_light)
+		{
+			return objp->ambient_colour;
+		}
+
+		//Depending on objp properties we will reflect refract and cast shadow rays
+
+		rgbf colour; // colour of pixel to return
+
+
+		//point of intersecion
+		vector3 pos = ray.direction * t + ray.position;
+
+
+		//Go through every light in the scene and
+		//shoot a shadow ray.
+		//This should be optimised for lights in significant
+		//proximity
+		for (int i = 0; i < scene1.lights_num; i++)
+		{	
+			//Light ray with correction factor to avoid rounding bugs
+			Ray lightRay(pos + objp->surface_normal(pos) * 1E-6, scene1.lights[i]->position - pos);
+			//Add to pixel colour according to illumination model
+			colour += shootRay(scene1, lightRay, depth, true, ray, scene1.lights[i], objp);
+		}
+
+		return colour; //Return pixel colour
+	}
+}
+
+/*rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth)
 {
 	float t = 0;
 	int index;
@@ -76,31 +169,11 @@ rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth)
 		if (temp < t || t == 0)
 			if (temp > 0) { t = temp; index = i; }
 
-		//if (t > 0 && (temp == 0 || t < temp)) { t = temp; index = i; } 
 	}
-
-	//std::cout << t << std::endl;
-	
 	if (t == 0)
 	{
-		//Infinite ray
-		//return rgbf(0.529,0.808, 0.922);
 		return rgbf(0, 0, 0); //returns black
 	}
-
-	//if (depth < max_depth && scene1.objects[index]->reflective)
-	//{
-		//Reflect ray
-	//	vector3 pos = ray.direction * t + ray.position;
-	//	vector3 n = scene1.objects[index]->surface_normal(pos);
-	//	vector3 dir = ray.direction - n * (n * ray.direction);
-	//	Ray newRay = Ray(pos+n*1E-6, dir);
-	//	
-	//	return pixelshade(scene1, ray, t, index) + shootRay(scene1, newRay, depth + 1); //Work out reflection
-//  //May have self intersection here offset maybe necessery
-	//}
-	//else
-	//{
 	rgbf c;
 	if (scene1.objects[index]->transparent && depth < max_depth)
 	{
@@ -118,17 +191,12 @@ rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth)
 	}
 	else
 	{
-
-
-		//rgbf c  = scene1.objects[index]->natrual_colour;
 		c  = pixelshade(scene1, ray, t, index);
-		//vector3 p = !(ray.position + ray.direction * t);
-		//rgbf c = rgbf(p.x, p.y, p.z);
 	}
 
 	return c;
-	//}
-}
+	
+}*/
 
 rgbf Trace(scene& sce, Ray ray, int d)
 {
