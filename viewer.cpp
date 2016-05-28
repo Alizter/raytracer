@@ -42,9 +42,11 @@ void colour(float x, float y, rgbf& out)
 	//std::cout << x << ' ' << y << '\t' << out.r << ' ' << out.g << ' ' << out.b << std::endl;
 }
 
+rgbf* pixels = new rgbf[size];
+
 void display()
 {	
-	rgbf* pixels = new rgbf[size];
+	//rgbf* pixels = new rgbf[size];
 
 	for (int i = 0; i < size; i++)
 		colour(i % window_width, i / window_width, pixels[i]);	
@@ -52,6 +54,8 @@ void display()
   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   	glDrawPixels(window_width,window_height,GL_RGB,GL_FLOAT,pixels);
  	glutSwapBuffers();
+
+	//delete pixels;
 }
 
 bool fullScreen;
@@ -129,6 +133,9 @@ void resize(int width, int height)
 	window_width = width,
 	window_height = height; 
 	size = width * height;
+
+	delete pixels;
+	pixels = new rgbf[size];
 
 	cam1.pixelwidth = width;
 	cam1.pixelheight = height;

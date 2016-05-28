@@ -82,6 +82,6 @@ void TestFunction1(scene& scene1)
 
 
 	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,0));
-	scene1.add_object(tor1);
+	//scene1.add_object(tor1);
 	
 }

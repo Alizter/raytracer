@@ -71,6 +71,8 @@ vector3 box::surface_normal(vector3& pos)
 	if (d < eps) return vector3( 0, 1, 0);
 	if (e < eps) return vector3( 0, 0,-1);
 	if (f < eps) return vector3( 0, 0, 1);
+
+	return vector3(0, 0, 0);
 }
 
 

@@ -109,7 +109,7 @@ vector3 torus_object::surface_normal(vector3& a)
 {
 	//return !(((a - position) ^ dir) ^ (a - position));
 
-	//return vector3(0, 1, 0);// !(a - position);
+	return vector3(0, 1, 0);// !(a - position);
 }
 
 //#endif
