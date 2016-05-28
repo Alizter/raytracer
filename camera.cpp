@@ -10,7 +10,6 @@ public:
 	vector3 position;
 	vector3 direction;
 	vector3 up;
-	vector3 right;
 	int pixelwidth, pixelheight;
 	Ray GetRay(float x, float y);	
 
@@ -20,7 +19,6 @@ public:
 		position = pos;
 		up = up_;
 		direction = dir;
-		right = up ^ direction; //Cross to get right vector
 		pixelwidth = width;
 		pixelheight = height;
 	}
@@ -28,6 +26,5 @@ public:
 
 Ray camera::GetRay(float x, float y)
 {
-	//std::cout << right * (x / pixelwidth - 0.5) << std::endl;
-	return Ray(position,  right * (x / pixelwidth - 0.5) +  up * (y / pixelheight - 0.5) + direction);
+	return Ray(position,  (up ^ direction) * (x / pixelwidth - 0.5) +  up * (y / pixelheight - 0.5) + direction*0.5);
 }

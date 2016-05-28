@@ -48,6 +48,7 @@ float plane_object::intersect(Ray& ray)
 	//std::cin.get();
 	//std::cout << ((position - ray.position) * n) * (1 / k) << std::endl;
 	return fmax(0,((position - ray.position) * n) * (1 / k));
+	//return fmax(((position - ray.position) * n) * (1 / k));
 }
 
 vector3 plane_object::surface_normal(vector3&)

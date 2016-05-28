@@ -13,12 +13,6 @@ public: //TODO Currently single object scene
 	ligs_vec lights;
 	int objects_num;
 	int lights_num;
-	camera cam;
-	
-	scene(camera& ca)
-	{
-		cam = ca;
-	}
 
 	void add_object(scene_object* obj);
 	void add_light(light* lig);

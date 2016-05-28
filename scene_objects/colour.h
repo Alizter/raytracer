@@ -12,6 +12,7 @@ struct rgbf
 	rgbf operator*(rgbf&);
 	rgbf operator!();
 	rgbf operator+=(rgbf);
+	bool operator==(rgbf);
 };
 
 
@@ -39,10 +40,15 @@ rgbf rgbf::operator!()
 
 rgbf rgbf::operator+=(rgbf a)
 {
-	this->r += a.r;
-	this->g += a.g;
-	this->b += a.b;
+	r += a.r;
+	g += a.g;
+	b += a.b;
 	return *this;
+}
+
+bool rgbf::operator==(rgbf a)
+{
+	return (r == a.r) && (g == a.g) && (b == a.b);
 }
 
 

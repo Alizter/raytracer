@@ -18,10 +18,13 @@ class scene_object
 public:
 	bool transparent;
 	bool reflective;
-	float I_ref;
+	float I_refl;
+	float I_refr;
 	float k_diff;
 	float k_spec;
 	float shininess;
+	float transparency;
+	float refindex;
 
 	rgbf natrual_colour;
 	rgbf ambient_colour;
@@ -37,13 +40,16 @@ public:
 		transparent = false;
 		position = pos;
 		reflective = false;
-		I_ref = 0;
+		I_refl = 0.1;
+		I_refr = 0;
 		k_diff = 1;
 		k_spec = 1;
 		shininess = 10;
+		transparency = 0;
+		refindex = 1.0;
 
 		natrual_colour = rgbf(1, 1, 1);
-		ambient_colour = rgbf(0.1, 0.1, 0.1);
+		ambient_colour = rgbf(0.05, 0.05, 0.05);
 	}
 	
 };

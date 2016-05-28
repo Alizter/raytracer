@@ -18,27 +18,28 @@
 //
 
 unsigned int 
-	window_width = 512,
-	window_height = 512; //Default size
+	window_width = 256,
+	window_height = 256; //Default size
 int size = window_width * window_height;
 
 camera cam1(
-	vector3(0, -1, 0) , //Position
-	!vector3(1, 0.5, 0), //Direction			
+	//vector3(2.9, 1.9, 0) , //Position
+	vector3(0, 0, 0),	
+	//!vector3(0, -1, 0), //Direction			
+	!vector3(1, 0, 0),	
 	!vector3(0, 0, 1), //Up vector
 	window_width, window_height);
-//
-// a= 1/3
-//
-//
-scene scene1(cam1);
 
-RayTracer rt(3);
+scene scene1;
+
+RayTracer rt(4); //Initialise ray tracing depth
 
 void colour(float x, float y, rgbf& out) 
 {
 	Ray ray = cam1.GetRay(x, y);
 	out = rt.shootRay(scene1, ray, 0);
+
+	//std::cout << x << ' ' << y << '\t' << out.r << ' ' << out.g << ' ' << out.b << std::endl;
 }
 
 void display()
@@ -55,16 +56,41 @@ void display()
 
 bool fullScreen;
 
-void MoveLight(vector3 p)
-{
-	scene1.lights[0]->position = scene1.lights[0]->position + p;
-	glutPostRedisplay();
 
+void DisplayText()
+{
+	
 	std::ostringstream ss;
-	ss << scene1.lights[0]->position;
+	ss << cam1.position << " " << cam1.direction;
 	const char* cstr = ss.str().c_str();
 
 	glutSetWindowTitle(cstr);
+}
+
+void Move(float inc, int dir)
+{
+	switch(dir)
+	{
+		case 0: cam1.position = cam1.position + cam1.direction * inc; break;
+		case 1: cam1.position = cam1.position - !(cam1.direction ^ cam1.up) * inc; break;
+		case 2: cam1.position = cam1.position - cam1.direction * inc; break;
+		case 3: cam1.position = cam1.position + !(cam1.direction ^ cam1.up) * inc; break;
+	}
+
+	glutPostRedisplay();
+	DisplayText();
+
+}
+
+void RotateCam(float angle)
+{
+	vector3 d = cam1.direction;
+	
+	cam1.direction.x = cos(angle) * d.x - sin(angle) * d.y;
+	cam1.direction.y = sin(angle) * d.x + cos(angle) * d.y;	
+	
+	glutPostRedisplay();
+	DisplayText();
 }
 
 void keyPress(unsigned char key, int x, int y)
@@ -75,13 +101,10 @@ void keyPress(unsigned char key, int x, int y)
 	{
 		if (fullScreen)
 		{
-			glutReshapeWindow(512, 512);
+			glutReshapeWindow(256, 256);
 			glutPositionWindow(0,0);
 		}
-		else
-		{
-			glutFullScreen();
-		}
+		else glutFullScreen();
 		
 		fullScreen = !fullScreen;
 		glutPostRedisplay();
@@ -89,35 +112,13 @@ void keyPress(unsigned char key, int x, int y)
 
 	const float inc = 0.1;
 
-	if (key == 'w')
-	{
-		MoveLight(vector3(inc, 0, 0));
-	}
-	
-	if (key == 's')
-	{
-		MoveLight(vector3(-inc, 0, 0));
-	}
+	if (key == 'w') Move(inc, 0);
+	if (key == 'd') Move(inc, 1);
+	if (key == 's') Move(inc, 2);
+	if (key == 'a') Move(inc, 3);
 
-	if (key == 'q')
-	{
-		MoveLight(vector3(0, 0, inc));
-	}
-
-	if (key == 'e')
-	{
-		MoveLight(vector3(0, 0, -inc));
-	}
-
-	if (key == 'a')
-	{
-		MoveLight(vector3(0, -inc, 0));
-	}
-
-	if (key == 'd')
-	{
-		MoveLight(vector3(0, inc, 0));
-	}
+	if (key == 'q') RotateCam(-M_PI / 12);
+	if (key == 'e') RotateCam(M_PI / 12);
 
 }
 
@@ -127,43 +128,22 @@ void resize(int width, int height)
 {
 	window_width = width,
 	window_height = height; 
-	size = window_width * window_height;
+	size = width * height;
 
-	scene1.cam = camera(
-		scene1.cam.position, //Position
-		scene1.cam.direction, //Direction			
-		scene1.cam.up, //Up vector
-		window_width, window_height);
-
+	cam1.pixelwidth = width;
+	cam1.pixelheight = height;
+	
 	glutPostRedisplay();
 }
 
-#include "scene_objects/sphere_object.h"
-#include "scene_objects/plane_object.h"
-#include "scene_objects/box_object.h"
+
+//Include the testing file with scene constructions
+#include "testfunctions.cpp"
 
 void InitialiseScene()
 {
-	sphere_object* sphere1 = new sphere_object(0.5f, vector3(2, 0, 0));
-	sphere1->natrual_colour = rgbf(1, 0, 0);
-	//sphere1->transparent = true;
-	//scene1.add_object(sphere1);
-
-	sphere_object* sphere2 = new sphere_object(0.5f, vector3(2.5, 0.5, 0));
-	sphere2->natrual_colour = rgbf(0, 0, 1);
-	//scene1.add_object(sphere2);
-
-	plane_object* plane1 = new plane_object(vector3(0, 0, -0.5), vector3(1, 0, 0), vector3(0, 1, 0));
-	plane1->natrual_colour = rgbf(0, 1, 0);
-	scene1.add_object(plane1);
-	 
-	box* box1 = new box(vector3(2, 0, 0), vector3(-0.5, -0.5, -0.5), vector3(0.5, 0.5, 0.5));
-	box1->natrual_colour = rgbf(0, 0, 1);
-	scene1.add_object(box1);
-	
-	scene1.add_light(new light(vector3(1, 1, 1), rgbf(1, 1, 1), 1.0f));
-	
-	//scene1.add_light(new light(vector3(1, -1, 1), rgbf(1, 1, 1), 1.0f));
+	SetCam(cam1, vector3(0, 0, 0), vector3(1, 0, 0));
+	TestFunction1(scene1);
 }
 
 int main(int argc, char** argv) 
