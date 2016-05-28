@@ -56,10 +56,10 @@ float torus_object::quartic(float a, float b, float c, float d, float e)
 	float eps = 1E-6;
 	
 	//Clean non-real values
-	float fx1 = abs(x1.imag()) < eps ? x1.real() : 0;
-	float fx2 = abs(x2.imag()) < eps ? x2.real() : 0;
-	float fx3 = abs(x3.imag()) < eps ? x3.real() : 0;
-	float fx4 = abs(x4.imag()) < eps ? x4.real() : 0;
+	float fx1 = fabs(x1.imag()) < eps ? x1.real() : 0;
+	float fx2 = fabs(x2.imag()) < eps ? x2.real() : 0;
+	float fx3 = fabs(x3.imag()) < eps ? x3.real() : 0;
+	float fx4 = fabs(x4.imag()) < eps ? x4.real() : 0;
 
 	/*std::cout << fx1 << '\n'
 		<< fx2 << '\n'
@@ -107,9 +107,9 @@ float torus_object::intersect(Ray& ray)
 
 vector3 torus_object::surface_normal(vector3& a)
 {
-	return !(((a - position) ^ dir) ^ (a - position));
+	//return !(((a - position) ^ dir) ^ (a - position));
 
-	//return vector3(0, 0, 0);// !(a - position);
+	//return vector3(0, 1, 0);// !(a - position);
 }
 
 //#endif

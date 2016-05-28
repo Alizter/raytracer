@@ -40,7 +40,7 @@ public:
 		transparent = false;
 		position = pos;
 		reflective = false;
-		I_refl = 0.1;
+		I_refl = 0.2;
 		I_refr = 0;
 		k_diff = 1;
 		k_spec = 1;

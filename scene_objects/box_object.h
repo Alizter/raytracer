@@ -17,27 +17,6 @@ public:
 	}
 };
 
-rgbf box::altcol(vector3& pos)
-{
-	float eps = 1E-6; //Floats must fall within this range to be equal
-
-
-	float a = abs(pos.x - lb.x); //std::cout << a << std::endl;
-	float b = abs(pos.x - rt.x); //std::cout << b << std::endl;
-	float c = abs(pos.y - lb.y); //std::cout << c << std::endl;
-	float d = abs(pos.y - rt.y); //std::cout << d << std::endl;
-	float e = abs(pos.z - lb.z); //std::cout << e << std::endl;
-	float f = abs(pos.z - rt.z); //std::cout << f << std::endl;
-
-	//if (a < eps) return rgbf(1.0, 0.0, 0.0);	
-	if (b < eps) return rgbf(1.0, 1.0, 0.0);
-	if (c < eps) return rgbf(0.0, 1.0, 0.0);
-	if (d < eps) return rgbf(0.0, 1.0, 1.0);
-	if (e < eps) return rgbf(0.0, 0.0, 1.0);
-	if (f < eps) return rgbf(1.0, 0.0, 1.0);
-}
-
-
 //Slab intersection algorithm
 float box::intersect(Ray& ray)
 {
@@ -62,54 +41,29 @@ float box::intersect(Ray& ray)
 	
 }
 
+rgbf box::altcol(vector3& a)
+{
+	return natrual_colour;
+}
 
-//BROKEN
+
+//--B-R-O-K-E-N--
 //A virtual construct called altcol was added to scene_object.h
 //This allows for cube face colouring and better visualisation of cube face finder algorithm
+//
+//This issue has now been fixed. Use fabs instead of abs
+
 
 vector3 box::surface_normal(vector3& pos)
 {
-	vector3 o = (lb - rt) * 0.5;
-	vector3 in = pos - (lb + o);
-	//if (in.x - rt.x <= 1E-6) return vector3(1, 0, 0);
-	//	else return vector3(-1, 0, 0);
-	//if (in.y - rt.y <= 1E-6) return vector3(0, 1, 0);
-	//	else return vector3(0, -1, 0);
-	//if (in.z - rt.z <= 1E-6) return vector3(0, 0, 1);
-	//	else return vector3(0, 0, -1);
-
-	
-	//float a = abs(pos.x - o.x);
-	//float as = a/(pos.x - o.x);	
-	//float b = abs(pos.y - o.y);
-	//float bs = b/(pos.y - o.y);
-	//float c = abs(pos.z - o.z);
-	//float cs = c/(pos.z - o.z);
-
-	//	   O-------rt	
-	//	  /|      /|
- 	//	 / |     / |
-	//	O--|----O  |
-	//	|  O----|--O
-	//	| /     | /
-	//	|/      |/	
-	//     lb-------O
-	
-	
 	float eps = 1E-6; //Floats must fall within this range to be equal
 
-	bool a_ = abs(in.x) < 0.5 + eps;
-	bool b_ = abs(in.y) < 0.5 + eps;
-	bool c_ = abs(in.z) < 0.5 + eps;
-
-	//std::cout << in.x << std::endl;
-
-	float a = abs(pos.x - lb.x); //std::cout << a << std::endl;
-	float b = abs(pos.x - rt.x); //std::cout << b << std::endl;
-	float c = abs(pos.y - lb.y); //std::cout << c << std::endl;
-	float d = abs(pos.y - rt.y); //std::cout << d << std::endl;
-	float e = abs(pos.z - lb.z); //std::cout << e << std::endl;
-	float f = abs(pos.z - rt.z); //std::cout << f << std::endl;
+	float a = fabs(pos.x - lb.x); //std::cout << a << std::endl;
+	float b = fabs(pos.x - rt.x); //std::cout << b << std::endl;
+	float c = fabs(pos.y - lb.y); //std::cout << c << std::endl;
+	float d = fabs(pos.y - rt.y); //std::cout << d << std::endl;
+	float e = fabs(pos.z - lb.z); //std::cout << e << std::endl;
+	float f = fabs(pos.z - rt.z); //std::cout << f << std::endl;
 
 	if (a < eps) return vector3(-1, 0, 0);
 	if (b < eps) return vector3( 1, 0, 0);
@@ -117,20 +71,6 @@ vector3 box::surface_normal(vector3& pos)
 	if (d < eps) return vector3( 0, 1, 0);
 	if (e < eps) return vector3( 0, 0,-1);
 	if (f < eps) return vector3( 0, 0, 1);
-	
-	//float cond = fmax(a, fmax(b, c));
-	
-	//if (cond == a) return vector3(-as, 0, 0);
-	//if (cond == b) return vector3(0, -bs, 0);
-	//if (cond == c) return vector3(0, 0, cs);
-	//return vector3(0, 0, 0);
-	//switch()
-	//{
-	//	case a: return !(vector3(0, o.y, 0) ^ vector3(0, 0, o.z)) * as;
-	//	case b: return !(vector3(o.x, 0, 0) ^ vector3(0, 0, o.z)) * bs;
-	//	case c: return !(vector3(o.x, 0, 0) ^ vector3(0, o.y, 0)) * cs;
-		
-	//}
 }
 
 
