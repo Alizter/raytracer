@@ -2,6 +2,7 @@
 #include "scene_objects/plane_object.h"
 #include "scene_objects/box_object.h"
 #include "scene_objects/torus_object.h"
+#include "scene_objects/triangle_object.h"
 
 
 //Construction helper functions
@@ -58,6 +59,13 @@ void AddBox(scene& scene1, vector3 pos, float r =0.5f, rgbf col =rgbf(0, 0, 1), 
 	scene1.add_object(box1);
 }
 
+void AddTriangle(scene& scene1, vector3 v1, vector3 v2, vector3 v3)
+{
+	triangle_object* tri = new triangle_object(v1, v1 - v1, v2 - v1, v3 - v1);
+	tri->natrual_colour = rgbf(1, 1, 1);
+	scene1.add_object(tri);
+}
+
 void SetCam(camera cam, vector3 pos, vector3 dir)
 {
 	cam.position = vector3(1, 0, 0);
@@ -83,5 +91,8 @@ void TestFunction1(scene& scene1)
 
 	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,0));
 	//scene1.add_object(tor1);
+
+
+	
 	
 }
