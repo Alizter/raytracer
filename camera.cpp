@@ -26,5 +26,5 @@ public:
 
 Ray camera::GetRay(float x, float y)
 {
-	return Ray(position,  (up ^ direction) * (x / pixelwidth - 0.5) +  up * (y / pixelheight - 0.5) + direction*0.5);
+	return Ray(position,  (up ^ direction) * (x / pixelwidth - 0.5) +  up * (y / pixelheight - 0.5) + direction);
 }

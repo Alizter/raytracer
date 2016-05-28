@@ -58,5 +58,5 @@ float triangle_object::intersect(Ray& ray)
 //Ray triangle normal
 vector3 triangle_object::surface_normal(vector3& a) 
 {
-	return !((v3 - v1)^(v2 - v1));
+	return !((v2 - v1)^(v3 - v1));
 }

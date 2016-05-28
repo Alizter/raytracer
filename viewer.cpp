@@ -18,7 +18,7 @@
 //
 
 unsigned int 
-	window_width = 256,
+	window_width = 512,
 	window_height = 256; //Default size
 int size = window_width * window_height;
 

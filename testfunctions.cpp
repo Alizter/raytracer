@@ -66,6 +66,55 @@ void AddTriangle(scene& scene1, vector3 v1, vector3 v2, vector3 v3)
 	scene1.add_object(tri);
 }
 
+void IcoSphere(scene& scene1, vector3 pos)
+{
+	vector3* verts = new vector3[12];
+
+	float t = (1+sqrt(5))/2;
+	
+	verts[0] = pos + vector3(-1, t, 0);
+	verts[1] = pos + vector3(1, t, 0);
+	verts[2] = pos + vector3(-1, -t, 0);
+	verts[3] = pos + vector3(1, -t, 0);
+
+	verts[4] = pos + vector3(0, -1, t);
+	verts[5] = pos + vector3(0, 1, t);
+	verts[6] = pos + vector3(0, -1, -t);
+	verts[7] = pos + vector3(0, 1, -t);
+
+	verts[8] = pos + vector3(t, 0, -1);
+	verts[9] = pos + vector3(t, 0, 1);
+	verts[10] = pos + vector3(-t, 0, -1);
+	verts[11] = pos + vector3(-t, 0, 1);
+
+	
+	AddTriangle(scene1, verts[0], verts[11], verts[5]);
+	AddTriangle(scene1, verts[0], verts[6], verts[1]);
+	AddTriangle(scene1, verts[0], verts[1], verts[7]);
+	AddTriangle(scene1, verts[0], verts[7], verts[10]);
+	AddTriangle(scene1, verts[0], verts[10], verts[11]);
+
+	AddTriangle(scene1, verts[1], verts[5], verts[9]);
+	AddTriangle(scene1, verts[5], verts[11], verts[4]);
+	AddTriangle(scene1, verts[11], verts[10], verts[2]);
+	AddTriangle(scene1, verts[10], verts[7], verts[6]);
+	AddTriangle(scene1, verts[7], verts[1], verts[8]);
+
+	AddTriangle(scene1, verts[3], verts[9], verts[4]);
+	AddTriangle(scene1, verts[3], verts[4], verts[2]);
+	AddTriangle(scene1, verts[3], verts[2], verts[6]);
+	AddTriangle(scene1, verts[3], verts[6], verts[8]);
+	AddTriangle(scene1, verts[3], verts[8], verts[9]);
+
+	AddTriangle(scene1, verts[4], verts[9], verts[5]);
+	AddTriangle(scene1, verts[2], verts[4], verts[11]);
+	AddTriangle(scene1, verts[6], verts[2], verts[10]);
+	AddTriangle(scene1, verts[8], verts[6], verts[7]);
+	AddTriangle(scene1, verts[9], verts[8], verts[1]);
+
+		
+}
+
 void SetCam(camera cam, vector3 pos, vector3 dir)
 {
 	cam.position = vector3(1, 0, 0);
@@ -78,16 +127,19 @@ void TestFunction1(scene& scene1)
 
 	//AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
 	
-	AddWall(scene1, vector3(4, 0, -0.5), vector3(0, 1, 0));
+	AddWall(scene1, vector3(10, 0, -0.5), vector3(0, 1, 0));
 
 	AddFloor(scene1, vector3(0, 0, -0.5));
 
 	//AddBox(scene1, vector3(2, -2, 0), 0.5, rgbf(2, 0, 1), false);
 
-	//
+	AddLightBall(scene1, vector3(4, 0, 2), 5, 10);
 
-	AddLight(scene1, vector3(0, 0, 2));
+	//AddLight(scene1, vector3(0, 0, 2));
+	//AddLight(scene1, vector3(5, 3, 2));
+	//AddLight(scene1, vector3(-5, 3, 2));
 
+	IcoSphere(scene1, vector3(4, 0, 2));
 
 	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,0));
 	//scene1.add_object(tor1);
