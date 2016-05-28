@@ -1,3 +1,6 @@
+#ifndef TRI
+#define TRI
+
 #include "scene_object.h"
 
 class triangle_object : public scene_object
@@ -60,3 +63,5 @@ vector3 triangle_object::surface_normal(vector3& a)
 {
 	return !((v2 - v1)^(v3 - v1));
 }
+
+#endif

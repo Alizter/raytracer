@@ -1,10 +1,14 @@
+#ifndef BOX
+#define BOX
+
 #include "scene_object.h"
 
 class box : public scene_object
 {	
+public:
 	vector3 lb;
 	vector3 rt;	
-public:
+
 	float intersect(Ray&);
 	vector3 surface_normal(vector3&);
 	
@@ -75,4 +79,4 @@ vector3 box::surface_normal(vector3& pos)
 	return vector3(0, 0, 0);
 }
 
-
+#endif

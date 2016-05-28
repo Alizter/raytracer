@@ -3,6 +3,7 @@
 #include "scene_objects/box_object.h"
 #include "scene_objects/torus_object.h"
 #include "scene_objects/triangle_object.h"
+#include "scene_objects/mesh.h"
 
 
 //Construction helper functions
@@ -66,6 +67,13 @@ void AddTriangle(scene& scene1, vector3 v1, vector3 v2, vector3 v3)
 	scene1.add_object(tri);
 }
 
+void AddTriangleToMesh(mesh* m, vector3 v1, vector3 v2, vector3 v3)
+{
+	triangle_object* tri = new triangle_object(v1, v1 - v1, v2 - v1, v3 - v1);
+	tri->natrual_colour = rgbf(1, 1, 1);
+	m->add_triangle(tri);
+}
+
 void IcoSphere(scene& scene1, vector3 pos)
 {
 	vector3* verts = new vector3[12];
@@ -87,32 +95,33 @@ void IcoSphere(scene& scene1, vector3 pos)
 	verts[10] = pos + vector3(-t, 0, -1);
 	verts[11] = pos + vector3(-t, 0, 1);
 
+	mesh* m1 = new mesh(pos, vector3(-t, -t, -t), vector3(t, t, t));
 	
-	AddTriangle(scene1, verts[0], verts[11], verts[5]);
-	AddTriangle(scene1, verts[0], verts[6], verts[1]);
-	AddTriangle(scene1, verts[0], verts[1], verts[7]);
-	AddTriangle(scene1, verts[0], verts[7], verts[10]);
-	AddTriangle(scene1, verts[0], verts[10], verts[11]);
+	AddTriangleToMesh(m1, verts[0], verts[11], verts[5]);
+	AddTriangleToMesh(m1, verts[0], verts[6], verts[1]);
+	AddTriangleToMesh(m1, verts[0], verts[1], verts[7]);
+	AddTriangleToMesh(m1, verts[0], verts[7], verts[10]);
+	AddTriangleToMesh(m1, verts[0], verts[10], verts[11]);
 
-	AddTriangle(scene1, verts[1], verts[5], verts[9]);
-	AddTriangle(scene1, verts[5], verts[11], verts[4]);
-	AddTriangle(scene1, verts[11], verts[10], verts[2]);
-	AddTriangle(scene1, verts[10], verts[7], verts[6]);
-	AddTriangle(scene1, verts[7], verts[1], verts[8]);
+	AddTriangleToMesh(m1, verts[1], verts[5], verts[9]);
+	AddTriangleToMesh(m1, verts[5], verts[11], verts[4]);
+	AddTriangleToMesh(m1, verts[11], verts[10], verts[2]);
+	AddTriangleToMesh(m1, verts[10], verts[7], verts[6]);
+	AddTriangleToMesh(m1, verts[7], verts[1], verts[8]);
 
-	AddTriangle(scene1, verts[3], verts[9], verts[4]);
-	AddTriangle(scene1, verts[3], verts[4], verts[2]);
-	AddTriangle(scene1, verts[3], verts[2], verts[6]);
-	AddTriangle(scene1, verts[3], verts[6], verts[8]);
-	AddTriangle(scene1, verts[3], verts[8], verts[9]);
+	AddTriangleToMesh(m1, verts[3], verts[9], verts[4]);
+	AddTriangleToMesh(m1, verts[3], verts[4], verts[2]);
+	AddTriangleToMesh(m1, verts[3], verts[2], verts[6]);
+	AddTriangleToMesh(m1, verts[3], verts[6], verts[8]);
+	AddTriangleToMesh(m1, verts[3], verts[8], verts[9]);
 
-	AddTriangle(scene1, verts[4], verts[9], verts[5]);
-	AddTriangle(scene1, verts[2], verts[4], verts[11]);
-	AddTriangle(scene1, verts[6], verts[2], verts[10]);
-	AddTriangle(scene1, verts[8], verts[6], verts[7]);
-	AddTriangle(scene1, verts[9], verts[8], verts[1]);
+	AddTriangleToMesh(m1, verts[4], verts[9], verts[5]);
+	AddTriangleToMesh(m1, verts[2], verts[4], verts[11]);
+	AddTriangleToMesh(m1, verts[6], verts[2], verts[10]);
+	AddTriangleToMesh(m1, verts[8], verts[6], verts[7]);
+	AddTriangleToMesh(m1, verts[9], verts[8], verts[1]);
 
-		
+	scene1.add_object(m1);
 }
 
 void SetCam(camera cam, vector3 pos, vector3 dir)
