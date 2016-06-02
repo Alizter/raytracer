@@ -18,16 +18,16 @@
 //
 
 unsigned int 
-	window_width = 256,
-	window_height = 256; //Default size
+	window_width = 100,
+	window_height = 100; //Default size
 int size = window_width * window_height;
 
 camera cam1(
 	//vector3(2.9, 1.9, 0) , //Position
-	vector3(0, 0, 0),	
+	vector3(-1, 0.3, 0.5),	
 	//!vector3(0, -1, 0), //Direction			
-	!vector3(1, 0, 0),	
-	!vector3(0, 0, 1), //Up vector
+	!vector3(1, -0.1, -0.25),	
+	!vector3(1, -0.25, 1.9), //Up vector
 	window_width, window_height);
 
 scene scene1;
@@ -49,7 +49,10 @@ void display()
 	//rgbf* pixels = new rgbf[size];
 
 	for (int i = 0; i < size; i++)
+	{
 		colour(i % window_width, i / window_width, pixels[i]);	
+		//std::cout << (float)i / size * 100 << '%' << '\r';
+	}
 
   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   	glDrawPixels(window_width,window_height,GL_RGB,GL_FLOAT,pixels);
@@ -149,7 +152,7 @@ void resize(int width, int height)
 
 void InitialiseScene()
 {
-	SetCam(cam1, vector3(0, 0, 0), vector3(1, 0, 0));
+	//SetCam(cam1, vector3(-3, 0, 2), !vector3(1, 0, 0));
 	TestFunction1(scene1);
 }
 

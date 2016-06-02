@@ -17,13 +17,14 @@ struct vector3
 {
 	float x, y, z;
 	
-	vector3(float a =0, float b =0, float c =0) { x = a; y = b; z = c; }
+	vector3(const float& a =0, const float& b =0, const float& c =0) { x = a; y = b; z = c; }
+	//vector3(vector3& a) { this->x = a.x, this->y = a.y, this->z = a.z; }
 
 	vector3 operator+(const vector3&) const;//vector addition
 	vector3 operator-(const vector3&) const;//vector subtraction
 	vector3 operator-() 		  const;//negation
 	float   operator*(const vector3&) const;//dot product
-	vector3 operator*(float) 	  const;//scalar product
+	vector3 operator*(const float&)	  const;//scalar product
 	vector3 operator^(const vector3&) const;//cross product
 	vector3 operator!() 		  const;//normalise
 
@@ -44,7 +45,7 @@ vector3 vector3::operator-(const vector3& a) const
 float 	vector3::operator*(const vector3& a) const 
 { return this->x * a.x + this->y * a.y + this->z * a.z; } //dot product
 
-vector3 vector3::operator*(float a) const 
+vector3 vector3::operator*(const float& a) const 
 { return vector3(a * this->x, a * this->y, a * this->z); } //scalar product
 	
 vector3 vector3::operator^(const vector3& a) const  //cross product

@@ -74,6 +74,14 @@ void AddTriangleToMesh(mesh* m, vector3 v1, vector3 v2, vector3 v3)
 	m->add_triangle(tri);
 }
 
+//Add triangle to mesh with normal
+void ATTMWN(mesh* m, vector3 v1, vector3 v2, vector3 v3, vector3 n)
+{
+	triangle_object* tri = new triangle_object(v1, v1 - v1, v2 - v1, v3 - v1, n);
+	tri->natrual_colour = rgbf(1, 1, 1);
+	m->add_triangle(tri);
+}
+
 void IcoSphere(scene& scene1, vector3 pos)
 {
 	vector3* verts = new vector3[12];
@@ -124,36 +132,125 @@ void IcoSphere(scene& scene1, vector3 pos)
 	scene1.add_object(m1);
 }
 
-void SetCam(camera cam, vector3 pos, vector3 dir)
+#include<string>
+#include<vector>
+#include<fstream>
+#include<iostream>
+
+//String splitter http://stackoverflow.com/a/236803
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) 
 {
-	cam.position = vector3(1, 0, 0);
-	cam.direction = vector3(1, 0, 0);
-	cam.up = vector3(0, 0, 1);
+	std::stringstream ss(s);
+	std::string item;
+	
+  	while (std::getline(ss, item, delim)) 
+	{
+        	elems.push_back(item);
+	}
+	
+	return elems;
 }
+
+//Reads a mesh from a .obj file centered at 0,0,0
+mesh* ReadMesh(std::string fileName, vector3 pos)
+{
+	mesh* m = new mesh(
+			pos, 
+			vector3(-1.1, -1.1, -1.1), 
+			vector3(1.1, 1.1, 1.1));
+
+	std::vector<vector3> verts;
+	std::vector<vector3> norms;
+	
+	//Reading obj file
+	std::ifstream myfile(fileName.c_str());
+	std::string line;
+
+	while (std::getline(myfile, line))
+	{
+		std::vector<std::string> elems;
+		split(line, ' ', elems);
+
+		if (elems[0] == "v")
+		{
+			vector3 vert = pos + vector3(
+				   atof(elems[3].c_str()),
+				   atof(elems[1].c_str()),
+				   atof(elems[2].c_str()));
+			//std::cout << vert << std::endl;
+			
+			verts.push_back(vert);
+		}
+		else if (elems[0] == "vn")
+		{
+			vector3 norm = vector3(
+				   atof(elems[1].c_str()),
+				   atof(elems[2].c_str()),
+				   atof(elems[3].c_str()));		
+
+			norms.push_back(norm);
+		}
+		else if (elems[0] == "f")
+		{
+			std::vector<std::string> vn1;
+			std::vector<std::string> vn2;
+			std::vector<std::string> vn3;
+			
+			split(elems[1], '/', vn1);
+			split(elems[2], '/', vn2);
+			split(elems[3], '/', vn3);
+			
+			
+			vector3 v1 = verts[atoi(vn1[0].c_str()) - 1];
+			vector3 v2 = verts[atoi(vn2[0].c_str()) - 1];
+			vector3 v3 = verts[atoi(vn3[0].c_str()) - 1];
+			vector3 n = -!(norms[atoi(vn1[2].c_str()) - 1]
+				+norms[atoi(vn2[2].c_str()) - 1]
+				+norms[atoi(vn3[2].c_str()) - 1]);
+
+
+			//std::cout <<  verts[atoi(vn1[0].c_str())] << std::endl;
+
+			ATTMWN(m, v1, v2, v3, n);
+				
+		}
+	}
+
+	
+	return m;
+	
+}
+
+//void SetCam(camera& cam, vector3& pos, vector3& dir)
+//{
+///	cam.position = pos;
+//	cam.direction = dir;
+//	cam.up = vector3(0, 0, 1);
+//}
 
 void TestFunction1(scene& scene1)
 {
 
-	//AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
+	AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
 	
-	AddWall(scene1, vector3(10, 0, -0.5), vector3(0, 1, 0));
+	//AddWall(scene1, vector3(10, 0, -0.5), vector3(0, 1, 0));
 
 	AddFloor(scene1, vector3(0, 0, -0.5));
 
-	//AddBox(scene1, vector3(2, -2, 0), 0.5, rgbf(2, 0, 1), false);
+	AddBox(scene1, vector3(2, -2, 0), 0.5, rgbf(2, 0, 1), false);
 
 	AddLightBall(scene1, vector3(4, 0, 2), 5, 10);
 
-	//AddLight(scene1, vector3(0, 0, 2));
+	//AddLight(scene1, vector3(-1, 0, 4));
 	//AddLight(scene1, vector3(5, 3, 2));
 	//AddLight(scene1, vector3(-5, 3, 2));
 
-	IcoSphere(scene1, vector3(4, 0, 2));
+	//IcoSphere(scene1, vector3(4, 0, 2));
 
 	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,0));
-	//scene1.add_object(tor1);
+	scene1.add_object(tor1);
 
-
+	//scene1.add_object(ReadMesh("teapot.obj", vector3(0, 0, -0.5)));
 	
 	
 }

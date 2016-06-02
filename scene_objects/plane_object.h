@@ -51,7 +51,7 @@ float plane_object::intersect(Ray& ray)
 	//return fmax(((position - ray.position) * n) * (1 / k));
 }
 
-vector3 plane_object::surface_normal(vector3&)
+vector3 plane_object::surface_normal(vector3&) 
 {
 	return n; //Surface normal for plane already computed
 }

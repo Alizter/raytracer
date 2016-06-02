@@ -17,8 +17,8 @@ class RayTracer
 public:
 	int max_depth;
 	//rgbf shootRay(scene&, Ray, int);
-	rgbf shootRay(scene&, Ray, int, 
-			bool is_light 	=false, 
+	rgbf shootRay(scene&, Ray&, int, 
+			const bool& is_light 	=false, 
 			Ray oldRay 	=Ray(vector3(0, 0, 0), vector3(0, 0, 0)), 
 			light* lig 	=new light(vector3(0, 0, 0), rgbf(0, 0, 0), 0),
 		  scene_object* oldobj 	=NULL); //Default values for non-shadows
@@ -48,7 +48,7 @@ rgbf shade(scene_object* obj, vector3& pos, vector3& dir, vector3& olddir, light
 	return (obj->ambient_colour + (obj->altcol(pos) * diff) + (lig->colour * spec)) * (1-obj->transparency);
 }
 
-rgbf RayTracer::shootRay(scene& scene1, Ray ray, int depth, bool is_light, Ray oldRay, light* lig, scene_object* oldobj)
+rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_light, Ray oldRay, light* lig, scene_object* oldobj)
 {
 	//Initialise pixel colour
 	rgbf colour = rgbf(0, 0, 0); //Background colour

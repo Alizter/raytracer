@@ -14,7 +14,7 @@ public:
 	Ray GetRay(float x, float y);	
 
 	//Constructor
-	camera(vector3 pos =vector3(0,0,0), vector3 dir =vector3(1,0,0), vector3 up_ =vector3(0,0,1), int width =100, int height =100)
+	camera(const vector3& pos =vector3(0,0,0), const vector3& dir =vector3(1,0,0), const vector3& up_ =vector3(0,0,1), int width =100, int height =100)
 	{
 		position = pos;
 		up = up_;
