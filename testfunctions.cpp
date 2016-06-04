@@ -37,7 +37,7 @@ void AddSphere(scene& scene1, vector3 pos, float r =0.5f, rgbf col =rgbf(0, 0, 1
 //Add a floor
 void AddFloor(scene& scene1, vector3 pos, rgbf col =rgbf(0, 1, 0))
 {
-	plane_object* plane1 = new plane_object(pos, vector3(1, 0, 0), vector3(0, 1, 0));
+	plane_object* plane1 = new plane_object(pos, vector3(0, 0, 1));
 	plane1->natrual_colour = col;
 	plane1->k_spec = 0; //No specular on floors
 	scene1.add_object(plane1);
@@ -46,7 +46,7 @@ void AddFloor(scene& scene1, vector3 pos, rgbf col =rgbf(0, 1, 0))
 //Add a wall plane facing in a direction
 void AddWall(scene& scene1, vector3 pos, vector3 dir, rgbf col =rgbf(0, 0.5, 0.5))
 {
-	plane_object* plane1 = new plane_object(pos, vector3(0, 0, 1), dir);
+	plane_object* plane1 = new plane_object(pos, vector3(0, 0, 1)^dir);
 	plane1->natrual_colour = rgbf(0, 0.5, 0.5);
 	plane1->k_spec = 0;
 	scene1.add_object(plane1);
@@ -221,36 +221,36 @@ mesh* ReadMesh(std::string fileName, vector3 pos)
 	
 }
 
-//void SetCam(camera& cam, vector3& pos, vector3& dir)
-//{
-///	cam.position = pos;
-//	cam.direction = dir;
-//	cam.up = vector3(0, 0, 1);
-//}
 
 void TestFunction1(scene& scene1)
 {
 
-	AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
+	//AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
 	
-	//AddWall(scene1, vector3(10, 0, -0.5), vector3(0, 1, 0));
+	//AddWall(scene1, vector3(2, 0, -0.5), vector3(0, 1, 0));
 
 	AddFloor(scene1, vector3(0, 0, -0.5));
 
-	AddBox(scene1, vector3(2, -2, 0), 0.5, rgbf(2, 0, 1), false);
+	//AddBox(scene1, vector3(2, -2, 5), 0.5, rgbf(2, 0, 1), false);
 
-	AddLightBall(scene1, vector3(4, 0, 2), 5, 10);
+	//AddLightBall(scene1, vector3(4, 0, 2), 5, 10);
 
-	//AddLight(scene1, vector3(-1, 0, 4));
+	AddLight(scene1, vector3(-1, 0, 4));
 	//AddLight(scene1, vector3(5, 3, 2));
 	//AddLight(scene1, vector3(-5, 3, 2));
 
 	//IcoSphere(scene1, vector3(4, 0, 2));
 
-	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,0));
+	torus_object* tor1 = new torus_object(0.5,1,vector3(2,0,-0.25), !vector3(-1, 0, 1));
+	tor1->natrual_colour = rgbf(1, 0, 0);
 	scene1.add_object(tor1);
 
 	//scene1.add_object(ReadMesh("teapot.obj", vector3(0, 0, -0.5)));
 	
 	
 }
+
+//TODO
+//Need to clean up how scene_objects are constructed etc.
+
+

@@ -14,7 +14,7 @@
 
 
 //To compile
-//g++ viewer.cpp -o raytest -lGL -lGLU -lglut -std=gnu++0x
+//g++ viewer.cpp -o test -lGL -lGLU -lglut
 //
 
 unsigned int 
@@ -22,13 +22,7 @@ unsigned int
 	window_height = 100; //Default size
 int size = window_width * window_height;
 
-camera cam1(
-	//vector3(2.9, 1.9, 0) , //Position
-	vector3(-1, 0.3, 0.5),	
-	//!vector3(0, -1, 0), //Direction			
-	!vector3(1, -0.1, -0.25),	
-	!vector3(1, -0.25, 1.9), //Up vector
-	window_width, window_height);
+camera cam1;
 
 scene scene1;
 
@@ -38,35 +32,24 @@ void colour(float x, float y, rgbf& out)
 {
 	Ray ray = cam1.GetRay(x, y);
 	out = rt.shootRay(scene1, ray, 0);
-
-	//std::cout << x << ' ' << y << '\t' << out.r << ' ' << out.g << ' ' << out.b << std::endl;
 }
 
-rgbf* pixels = new rgbf[size];
+rgbf* pixels = new rgbf[size]; //
 
 void display()
 {	
-	//rgbf* pixels = new rgbf[size];
-
 	for (int i = 0; i < size; i++)
 	{
-		colour(i % window_width, i / window_width, pixels[i]);	
-		//std::cout << (float)i / size * 100 << '%' << '\r';
+		colour(i % window_width, i / window_width, pixels[i]);
 	}
 
   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   	glDrawPixels(window_width,window_height,GL_RGB,GL_FLOAT,pixels);
  	glutSwapBuffers();
-
-	//delete pixels;
 }
-
-bool fullScreen;
-
 
 void DisplayText()
 {
-	
 	std::ostringstream ss;
 	ss << cam1.position << " " << cam1.direction;
 	const char* cstr = ss.str().c_str();
@@ -93,12 +76,14 @@ void RotateCam(float angle)
 {
 	vector3 d = cam1.direction;
 	
-	cam1.direction.x = cos(angle) * d.x - sin(angle) * d.y;
-	cam1.direction.y = sin(angle) * d.x + cos(angle) * d.y;	
+	cam1.setDirection(vector3(cos(angle) * d.x - sin(angle) * d.y, sin(angle) * d.x + cos(angle) * d.y, 0));
 	
 	glutPostRedisplay();
 	DisplayText();
 }
+
+
+bool fullScreen; //Full screen flag
 
 void keyPress(unsigned char key, int x, int y)
 {
@@ -140,8 +125,7 @@ void resize(int width, int height)
 	delete pixels;
 	pixels = new rgbf[size];
 
-	cam1.pixelwidth = width;
-	cam1.pixelheight = height;
+	cam1.setPixelSize(window_width, window_height);
 	
 	glutPostRedisplay();
 }
@@ -152,26 +136,42 @@ void resize(int width, int height)
 
 void InitialiseScene()
 {
-	//SetCam(cam1, vector3(-3, 0, 2), !vector3(1, 0, 0));
+	cam1.position = vector3(0, 0, 0);
+	cam1.setPixelSize(window_width, window_height);
+	cam1.setDirection(vector3(1, 0, 0));
+
 	TestFunction1(scene1);
 }
 
-int main(int argc, char** argv) 
+//Command line arguments, argc is number of elements
+//argv are the arguments
+int main(int argc, char* argv[]) 
 {
-	//std::cout << cam1.direction * cam1.up << std::endl;
+	if (argc > 2) //There are 3 arguments including name
+	{ 
+		int w = atoi(argv[1]), h = atoi(argv[2]); //Get integer arguments
+		
+		window_width = w ? w : 256; //Make sure integer is valide
+		window_height = h ? h : 256; //and assign accordingly
+		cam1.setPixelSize(window_width, window_height);
+	}
 
+	//Set up scenery
 	InitialiseScene();
+	//initialise glut - not sure how to use cmd line args here
   	glutInit(&argc, argv);
+	//Set up display mode
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	//Initialise window size
 	glutInitWindowSize(window_width, window_height);
+	//Create window
   	glutCreateWindow("Ray Tracing Test");
-	
-	//glutFullScreen();
-	//fullScreen = true;
-
+	//Rendering function
   	glutDisplayFunc(display);
+	//Key press controls
 	glutKeyboardFunc(keyPress);
-	//glutIdleFunc(idle);
+	//Resize function
 	glutReshapeFunc(resize);
- 	glutMainLoop(); //Start loop
+	//Start loop
+ 	glutMainLoop();
 }

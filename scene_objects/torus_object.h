@@ -10,7 +10,7 @@ class torus_object : public scene_object
 public:
 	float intersect(Ray& ray);
 	vector3 surface_normal(vector3&);
-	torus_object(float rad, float inrad, vector3 pos, vector3 dir =vector3(0, 0, 1)) : scene_object(pos) { r = rad; R = inrad; }
+	torus_object(float rad, float inrad, vector3 pos, vector3 dir_ =vector3(0, 0, 1)) : scene_object(pos) { r = rad; R = inrad;  dir = dir_; }
 	rgbf altcol(vector3& pos) { return natrual_colour; }
 	float quartic(float a, float b, float c, float d, float e);
 };
@@ -35,6 +35,8 @@ C fr(C r) { return r * r * r * r; }
 C cbrt(C r) { return std::pow(r, 1.0f/3); }
 
 //Solves a quartic and gives smallest positive root
+//This has been tested and works 99.9% sure
+//This does however need optimisation
 float torus_object::quartic(float a, float b, float c, float d, float e)
 {
 	//Generate parts of quartic equation
@@ -76,17 +78,17 @@ float torus_object::quartic(float a, float b, float c, float d, float e)
 float torus_object::intersect(Ray& ray)
 {
 	vector3 A = ray.position - position;
+	//std::cout << "A: " << A << std::endl; 
 	vector3 B = ray.direction;
+	//std::cout << "B: " << B << std::endl;
 
-	//Check bounding sphere intersection first
-	if (4 * (B * A) * (B * A) - 4 * (B * B) * ((A * A) - (r + R) * (r + R)) < 0) return 0;
-
+	
 	float AA = A * A;
 	float BB = B * B;
 	float AB = A * B;
 
-	float An = A.z;//A * dir;
-	float Bn = A.z;//B * dir;
+	float An = A * dir;
+	float Bn = B * dir;
 
 	float ar = AA - R * R - r * r;
 	
@@ -100,16 +102,18 @@ float torus_object::intersect(Ray& ray)
 	
 	float t = quartic(a, b, c, d, e);
 
-	if ((A + position + B * t).z < 0.5) return t;
-	else return 0;
-	
+	return t; //Slice top of torus
 }
 
 vector3 torus_object::surface_normal(vector3& a)
 {
+	vector3 p = a - position;
+	vector3 radial = !(p - p * dir) * R;
+	return -!(p - radial);
+
 	//return !(((a - position) ^ dir) ^ (a - position));
 
-	return vector3(0, 1, 0);// !(a - position);
+	//return vector3(0, 0, 1);// !(a - position);
 }
 
 //#endif
