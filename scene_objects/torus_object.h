@@ -12,7 +12,7 @@ public:
 	vector3 surface_normal(vector3&);
 	torus_object(float rad, float inrad, vector3 pos, vector3 dir_ =vector3(0, 0, 1)) : scene_object(pos) { r = rad; R = inrad;  dir = dir_; }
 	rgbf altcol(vector3& pos) { return natrual_colour; }
-	float quartic(float a, float b, float c, float d, float e);
+	//float quartic(double a, double b, double c, double d, double e);
 };
 
 //minimum positive float
@@ -27,32 +27,32 @@ float mpf(float a, float b)
 }
 
 #include <complex>
-#define C std::complex<float>
+#define C std::complex<double>
 
 C sq(C r) { return r * r; }
 C cb(C r) { return r * r * r; }
 C fr(C r) { return r * r * r * r; }
-C cbrt(C r) { return std::pow(r, 1.0f/3); }
+C cbrt(C r) { return std::pow(r, 1.0/3); }
 
 //Solves a quartic and gives smallest positive root
 //This has been tested and works 99.9% sure
 //This does however need optimisation
-float torus_object::quartic(float a, float b, float c, float d, float e)
+float quartic(double a, double b, double c, double d, double e)
 {
 	//Generate parts of quartic equation
 	
-	C p1 = 2.0f * cb(c) - 9.0f * b * c * d + 27.0f * a * sq(d) 
-		+ 27.0f * sq(b) * e - 72.0f * a * c * e;
-	C p2 = p1 + sqrt(-4.0f*cb(sq(c) - 3.0f * b * d + 12.0f * a * e)+sq(p1));
-	C p3 = (sq(c) - 3.0f * b * d + 12.0f * a * e)/(3.0f * a * cbrt(p2 / 2.0f)) + cbrt(p2 / 2.0f) / (3.0f * a);
-	C p4 = sqrt(sq(b)/sq(2.0f*a)-2.0f*c/(3.0f*a) + p3);
-	C p5 = sq(b)/(2.0f * sq(a)) - (4.0f * c) / (3.0f * a) - p3;
-	C p6 = (-cb(b)/cb(a) + 4.0f * b * c/sq(a) - 8.0f * d / a )/(4.0f * p4);
+	C p1 = 2.0 * cb(c) - 9.0 * b * c * d + 27.0 * a * sq(d) 
+		+ 27.0 * sq(b) * e - 72.0 * a * c * e;
+	C p2 = p1 + sqrt(-4.0*cb(sq(c) - 3.0 * b * d + 12.0 * a * e)+sq(p1));
+	C p3 = (sq(c) - 3.0 * b * d + 12.0 * a * e)/(3.0 * a * cbrt(p2 / 2.0)) + cbrt(p2 / 2.0) / (3.0 * a);
+	C p4 = sqrt(sq(b)/sq(2.0*a)-2.0*c/(3.0*a) + p3);
+	C p5 = sq(b)/(2.0 * sq(a)) - (4.0 * c) / (3.0 * a) - p3;
+	C p6 = (-cb(b)/cb(a) + 4.0 * b * c/sq(a) - 8.0 * d / a )/(4.0 * p4);
 
-	C x1 = -b/(4.0f*a) - p4/2.0f - sqrt(p5 - p6)/2.0f;
-	C x2 = -b/(4.0f*a) - p4/2.0f + sqrt(p5 - p6)/2.0f;
-	C x3 = -b/(4.0f*a) + p4/2.0f - sqrt(p5 + p6)/2.0f;
-	C x4 = -b/(4.0f*a) + p4/2.0f + sqrt(p5 + p6)/2.0f;
+	C x1 = -b/(4.0*a) - p4/2.0 - sqrt(p5 - p6)/2.0;
+	C x2 = -b/(4.0*a) - p4/2.0 + sqrt(p5 - p6)/2.0;
+	C x3 = -b/(4.0*a) + p4/2.0 - sqrt(p5 + p6)/2.0;
+	C x4 = -b/(4.0*a) + p4/2.0 + sqrt(p5 + p6)/2.0;
 	
 	//Definition of float zero
 	float eps = 1E-6;
@@ -81,6 +81,8 @@ float torus_object::intersect(Ray& ray)
 	//std::cout << "A: " << A << std::endl; 
 	vector3 B = ray.direction;
 	//std::cout << "B: " << B << std::endl;
+	
+	if ((B * A) * (B * A) - (B * B) * (A * A - (R + r) *(R + r)) < 0) return 0; //No intersection
 
 	
 	float AA = A * A;
@@ -109,7 +111,7 @@ vector3 torus_object::surface_normal(vector3& a)
 {
 	vector3 p = a - position;
 	vector3 radial = !(p - p * dir) * R;
-	return -!(p - radial);
+	return !(p - radial);
 
 	//return !(((a - position) ^ dir) ^ (a - position));
 

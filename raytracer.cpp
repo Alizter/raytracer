@@ -61,6 +61,7 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 	for (int i = 0; i < scene1.objects_num; i++)
 	{
 		if (scene1.objects[i] == oldobj) continue; //Self intersection fix
+		
 		float temp = scene1.objects[i]->intersect(ray); //intersection with object
 
 		if ((temp < t || t == 0) && temp > 0) //if (temp is shorter than t or t is currently 0) and temp is non-zero
@@ -117,8 +118,14 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 
 		for (int i = 0; i < scene1.lights_num; i++)
 		{	
-			Ray lightRay(pos, scene1.lights[i]->position - pos);
+			//Ray lightRay(pos, scene1.lights[i]->position - pos);
 			//Shoot shadow ray
+			
+			float eps = 1E-3; //Shadow self intersection correct
+			//Was previously ommited but some objects self shadow
+			Ray lightRay = Ray(pos + objp->surface_normal(pos) * eps, scene1.lights[i]->position - pos);
+		
+
 			colour += shootRay(scene1, lightRay, depth + 1, true, ray, scene1.lights[i], objp);
 		}
 
@@ -143,6 +150,10 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 					* objp->I_refr;
 			}
 		}
+	}
+	else
+	{
+		colour += rgbf(0, 0.2, 0.8); //Sky colour
 	}
 
 	return colour;

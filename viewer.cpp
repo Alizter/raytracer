@@ -41,6 +41,7 @@ void display()
 	for (int i = 0; i < size; i++)
 	{
 		colour(i % window_width, i / window_width, pixels[i]);
+		printf("\r%3.2f%%", (float)i / size * 100);
 	}
 
   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
