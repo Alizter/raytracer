@@ -15,6 +15,36 @@ public:
 	//float quartic(double a, double b, double c, double d, double e);
 };
 
+////EXPERIMENTAL NEWTONS METHOD
+
+double evPol(double x, int deg, double* coeffs) {
+	double result = 0;
+	for (int i = 0; i <= deg; i++) result += coeffs[i] * pow(x, i);
+	return result;
+}
+
+float evDPol(double x, int deg, double* coeffs) {
+	double result = 0;
+	for (int i = 1; i <= deg; i++) result += i * coeffs[i] * pow(x, i - 1);
+	return result;
+}
+
+double* poldiv(double r, int deg, double* coeffs) {
+	double* q = new double[deg];
+	q[deg - 1] = coeffs[deg - 1];
+	for (int i = 2; i < deg; i++) q[deg - i - 1] = q[deg - i] * r + coeffs[deg - i];
+	return q;
+}
+
+double newt(int n, int deg, double* coeffs) {
+	double res = 0;
+	for (int i = 0; i < n; i++) res = res - evPol(res, deg, coeffs) / evDPol(res, deg, coeffs);
+	return (res < 0) ? newt(n, deg - 1, poldiv(res, deg, coeffs)) : res;
+}
+
+////EXPERIMENTAL NEWTONS METHOD
+
+
 //minimum positive float
 float mpf(float a, float b)
 {
@@ -104,6 +134,11 @@ float torus_object::intersect(Ray& ray)
 	
 	float t = quartic(a, b, c, d, e);
 
+	//Newtons method
+	
+	//double cs[5] = {a, b, c, d, e};
+	//float t = newt(10, 4, cs);
+	
 	return t; //Slice top of torus
 }
 

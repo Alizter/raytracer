@@ -229,7 +229,7 @@ void TestFunction1(scene& scene1)
 	
 	//AddWall(scene1, vector3(2, 0, -0.5), vector3(0, 1, 0));
 
-	//AddFloor(scene1, vector3(0, 0, -0.5));
+	AddFloor(scene1, vector3(0, 0, -0.5));
 
 	//AddBox(scene1, vector3(2, -2, 5), 0.5, rgbf(2, 0, 1), false);
 
@@ -241,12 +241,12 @@ void TestFunction1(scene& scene1)
 
 	//IcoSphere(scene1, vector3(4, 0, 2));
 
-	torus_object* tor1 = new torus_object(0.1,0.5,vector3(1,0,0.5), !vector3(1, 0, 0));
+	torus_object* tor1 = new torus_object(0.1,0.5,vector3(1,0,-0.5));
 	tor1->natrual_colour = rgbf(1, 0, 0);	
 	//tor1->ambient_colour = rgbf(0, 0, 0.5);
-	//scene1.add_object(tor1);
+	scene1.add_object(tor1);
 
-	scene1.add_object(ReadMesh("teapot.obj", vector3(1, -0.25, -0.5)));
+	//scene1.add_object(ReadMesh("teapot.obj", vector3(1, -0.25, -0.5)));
 	
 	
 }

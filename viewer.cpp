@@ -7,7 +7,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<iostream>
-#include<time.h>
+//#include<time.h>
 #include<string>
 #include<sstream>
 
@@ -36,13 +36,25 @@ void colour(float x, float y, rgbf& out)
 
 rgbf* pixels = new rgbf[size]; //
 
+#include <chrono>
+#include <thread>
+
 void display()
 {	
+	auto t1 = std::chrono::high_resolution_clock::now();
+
 	for (int i = 0; i < size; i++)
 	{
 		colour(i % window_width, i / window_width, pixels[i]);
-		printf("\r%3.2f%%", (float)i / size * 100);
+		//printf("\r%3.2f%%", (float)i / size * 100);
 	}
+
+	auto t2 = std::chrono::high_resolution_clock::now();
+
+	float time = std::chrono::duration_cast<std::chrono
+			::milliseconds>(t2 - t1).count();
+
+	//printf("\n%d\n", (int)time);
 
   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   	glDrawPixels(window_width,window_height,GL_RGB,GL_FLOAT,pixels);
