@@ -23,15 +23,16 @@ unsigned int
 int size = window_width * window_height;
 
 camera cam1;
-
 scene scene1;
-
 RayTracer rt(4); //Initialise ray tracing depth
+float gamCor = 1; //Gamma correction //2.8 is PAL
 
 void colour(float x, float y, rgbf& out) 
 {
 	Ray ray = cam1.GetRay(x, y);
-	out = rt.shootRay(scene1, ray, 0);
+	//out = rt.shootRay(scene1, ray, 0);
+	out = rt.shootRay(scene1, ray, 0).gc(gamCor); //Gamma correction
+
 }
 
 rgbf* pixels = new rgbf[size]; //

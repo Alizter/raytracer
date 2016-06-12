@@ -41,7 +41,7 @@ public:
 		position = pos;
 		reflective = false;
 		I_refl = 0.2;
-		I_refr = 0;
+		I_refr = 1;
 		k_diff = 1;
 		k_spec = 1;
 		shininess = 10;

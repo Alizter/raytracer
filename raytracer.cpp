@@ -81,9 +81,13 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 	if (is_light)
 	{
 		//std::cout << (lig->position - ray.position).norm() << '\t' << t * ray.direction.norm() <<std::endl;
-		//std::cout << ray.direction.norm();		
+		//std::cout << ray.direction.norm();
 
-		if (t == 0 || t * ray.direction.norm() > (lig->position - ray.position).norm())
+		//if (oldobj != objp && objp->transparent)
+
+		if (t == 0 
+			|| t * ray.direction.norm() > (lig->position - ray.position).norm() 
+			|| (oldobj != objp && objp->transparent))
 		{	
 			float k_d = oldobj->k_diff;
 			float k_s = oldobj->k_spec;	
@@ -100,10 +104,11 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 	
 			//return rgbf(0, 0, 0.5); //using altcol here
 			return (
-				oldobj->ambient_colour 
-				+ (oldobj->altcol(ray.position) * diff) 
-				+ (lig->colour * spec)
-				) * (1-oldobj->transparency);
+				oldobj->ambient_colour //ambient
+				+ (oldobj->altcol(ray.position) * diff) //diffuse 
+				+ (lig->colour * spec) //specular
+				) * (1-oldobj->transparency) //object transperncy terms
+				* (objp->transparent ? objp->transparency : 1); //Shadow transparency term
 		}
 		else
 		{
@@ -121,7 +126,7 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 			//Ray lightRay(pos, scene1.lights[i]->position - pos);
 			//Shoot shadow ray
 			
-			float eps = 1E-3; //Shadow self intersection correct
+			float eps = 0; //Shadow self intersection correct
 			//Was previously ommited but some objects self shadow
 			Ray lightRay = Ray(pos + objp->surface_normal(pos) * eps, scene1.lights[i]->position - pos);
 		
@@ -142,18 +147,36 @@ rgbf RayTracer::shootRay(scene& scene1, Ray& ray, int depth, const bool& is_ligh
 
 			if (objp->transparent) //Add refractive components
 			{
-				float d = fmin(1.0, n * ray.direction); //Make sure that no numerical errors as d < 1
+				//Old model
+				float d = n * ray.direction; //Make sure that no numerical errors as d < 1
 				float r = objp->refindex; //refractive index ratio
 				float k = r * r * (1 - d * d);
-				Ray refRay(pos, ray.direction * r + n * (r * d + sqrt(1 - k)));
+				Ray refRay(pos,  ray.direction * r - n * (r * d + sqrt(1 - k)));
 				colour += shootRay(scene1, refRay, depth + 1, is_light, ray, lig, objp) 
 					* objp->I_refr;
+				
+				/*
+				//Refraction model with material dependant ref indexes
+				rgbf col(0, 0, 0); //Initialise empty colour
+				float ref_indexes[3] = { 0.9, 0.8, 0.7 }; //temp sol to objp's ref indexes for rgb
+
+				for(int i = 0; i < 3; i++)
+				{
+					float d = fmin(1.0, n * ray.direction); //Make sure that no numerical errors as d < 1
+					float r = ref_indexes[i]; //refractive index ratio
+					float k = r * r * (1 - d * d);
+					Ray refRay(pos, ray.direction * r + n * (r * d + sqrt(1 - k)));
+					col[i] = (shootRay(scene1, refRay, depth + 1, is_light, ray, lig, objp) 
+						* objp->I_refr)[i];
+				}
+
+				colour += col; */
 			}
 		}
 	}
 	else
 	{
-		colour += rgbf(0, 0.2, 0.8); //Sky colour
+		colour += rgbf(0.6, 0.6, 1); //Sky colour
 	}
 
 	return colour;

@@ -19,7 +19,7 @@ void AddLightBall(scene& scene1, vector3 pos, int number, float r)
 	for (int i = 0; i < number; i++)
 	{
 		float t = 2 * M_PI / number * i;
-		light* lig = new light(pos + vector3(r * cos(t), r * sin(t), 0), rgbf(1, 1, 1), 1.9 / number);
+		light* lig = new light(pos + vector3(r * cos(t), r * sin(t), 0), rgbf(1, 1, 1) , 1.0 / number);
 		scene1.add_light(lig);
 	}
 }
@@ -43,11 +43,20 @@ void AddFloor(scene& scene1, vector3 pos, rgbf col =rgbf(0, 1, 0))
 	scene1.add_object(plane1);
 }
 
+//Add a ceiling
+void AddCeiling(scene& scene1, vector3 pos, rgbf col =rgbf(0, 1, 0))
+{
+	plane_object* plane1 = new plane_object(pos, vector3(0, 0, -1));
+	plane1->natrual_colour = col;
+	plane1->k_spec = 0; //No specular on floors
+	scene1.add_object(plane1);
+}
+
 //Add a wall plane facing in a direction
 void AddWall(scene& scene1, vector3 pos, vector3 dir, rgbf col =rgbf(0, 0.5, 0.5))
 {
 	plane_object* plane1 = new plane_object(pos, vector3(0, 0, 1)^dir);
-	plane1->natrual_colour = rgbf(0, 0.5, 0.5);
+	plane1->natrual_colour = col;
 	plane1->k_spec = 0;
 	scene1.add_object(plane1);
 }
@@ -225,17 +234,55 @@ mesh* ReadMesh(std::string fileName, vector3 pos)
 void TestFunction1(scene& scene1)
 {
 
-	//AddSphere(scene1, vector3(1.5, 0, 0), 0.5, rgbf(0, 0, 1), false);
+	AddSphere(scene1, vector3(1.5, -1.5, 0), 0.5, rgbf(0, 0, 1), false);
+	//AddSphere(scene1, vector3(1, 1, 0), 0.5, rgbf(0, 1, 1), true);
+		
+	sphere_object* s1 = new sphere_object(0.5, vector3(1.5, -1, 0));
+	s1->natrual_colour = rgbf(0, 0, 0);
+	s1->reflective = true;
+	s1->I_refl = 1;
+	s1->k_spec = 1;	
+	s1->ambient_colour = rgbf(0, 0, 0);
+	s1->shininess = 100;
+	//scene1.add_object(s1);
+
+	sphere_object* s2 = new sphere_object(0.5, vector3(1.5, 1, 0));
+	s2->transparent = true;
+	s2->transparency = 0.9;
+	s2->refindex = 0.9;
+	scene1.add_object(s2);
+
+	rgbf red(1, 0, 0);
+	rgbf green(0, 1, 0);
+	rgbf blue(0, 0, 1);
+	rgbf yellow = red + green;
+	rgbf magenta = red + blue;
+	rgbf cyan = green + blue;
+
+
+	AddWall(scene1, vector3(3, 0, -0.5), vector3(0, 1, 0), green * 0.7);
+	AddWall(scene1, vector3(0, 3, -0.5), vector3(-1, 0, 0), red* 0.7);
+	AddWall(scene1, vector3(-3, 0, -0.5), vector3(0, -1, 0), blue* 0.7);
+	AddWall(scene1, vector3(0, -3, -0.5), vector3(1, 0, 0), yellow* 0.7);
 	
-	//AddWall(scene1, vector3(2, 0, -0.5), vector3(0, 1, 0));
 
-	AddFloor(scene1, vector3(0, 0, -0.5));
+	AddCeiling(scene1, vector3(0, 0, +3.5), magenta * 0.7);
+	AddFloor(scene1, vector3(0, 0, -0.5), cyan * 0.7);
 
-	//AddBox(scene1, vector3(2, -2, 5), 0.5, rgbf(2, 0, 1), false);
+	//AddBox(scene1, vector3(1, -0.5, -0.3), 0.2, rgbf(1, 0, 1), true);
 
-	//AddLightBall(scene1, vector3(4, 0, 2), 5, 10);
+	box* box1 = new box(vector3(1, -0.5, 0), vector3(-0.2, -0.2, -0.2), vector3(0.2, 0.2, 0.2));
+	box1->natrual_colour = rgbf(0, 0, 0);
+	box1->reflective = false;
+	box1->transparent = true;
+	box1->transparency = 1;
+	box1->I_refr = 1;
+	box1->refindex = 2;
+	scene1.add_object(box1);
 
-	AddLight(scene1, vector3(-2, 0, 4));
+	//AddLightBall(scene1, vector3(-0.8, 0, 3), 3, 0.1);
+
+	AddLight(scene1, vector3(-1.5, 1.5, 3));
 	//AddLight(scene1, vector3(2, 0, 4));
 	//AddLight(scene1, vector3(-5, 3, 2));
 
@@ -244,9 +291,16 @@ void TestFunction1(scene& scene1)
 	torus_object* tor1 = new torus_object(0.1,0.5,vector3(1,0,-0.5));
 	tor1->natrual_colour = rgbf(1, 0, 0);	
 	//tor1->ambient_colour = rgbf(0, 0, 0.5);
-	scene1.add_object(tor1);
+	//scene1.add_object(tor1);
 
-	//scene1.add_object(ReadMesh("teapot.obj", vector3(1, -0.25, -0.5)));
+	mesh* m1 = ReadMesh("teapot.obj", vector3(1, -0.25, -0.5));
+	m1->natrual_colour = rgbf(0, 0, 0);
+	m1->reflective = false;
+	m1->transparent = true;
+	m1->transparency = 1;
+	m1->I_refr = 1;
+
+	//scene1.add_object(m1);
 	
 	
 }

@@ -4,6 +4,18 @@
 
 typedef std::vector<triangle_object*> tvec;
 
+class octmesh
+{
+	box bb;
+	
+public:
+	octmesh(vector3 lb, vector3 rt) : bb((lb + rt)*0.5, (lb-rt)*0.5, (rt-lb)*0.5)
+	{
+	}
+
+
+};
+
 class mesh : public scene_object
 {
 	box bb;
